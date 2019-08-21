@@ -2,11 +2,14 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Link, Switch, Route } from 'react-router-dom';
+import Details from './Details'
+import {connect} from 'react-redux'
 
 class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {items : [], text: ""};
+    console.log(this.props.sideItems)
   }
   handleChange(e){
     let value = e.target.value;
@@ -14,115 +17,61 @@ class App extends React.Component{
   }
   create(){
     this.setState({items: [...this.state.items, this.state.text], text:""});
+    this.props.addItem(this.state.text)
   }
-  
-  delete(deleteItem, items){
-    const result = items.filter((item) => item != deleteItem);
-    this.setState({items: result});
-    
+
+  delete(item){
+    this.props.deleteItem(item)
   }
-  
-  update(updateItem, items){
-    for(let i = 0 ; i < items.length; i++){
-      if(items[i] === updateItem){
-          items[i] = this.state.text;
-          this.setState ({items:items, text:""});
-          break;
-      }
-    }
-  }
-  
+
   render(){
-  const items = this.state.items;
+  const items = this.props.sideItems;
   //console.log(items);
     return(
     <Router>
       <div>
-
         <button onClick = {() => this.create()}>Add Item</button>
         <ul>
-        
           {items.map(item => (
             <li>
-              <Link to = {`/details/${item}/${item}`}>{item}</Link>
-              
+              <Link to = {`/details/${item.category}/${item.category}`}>{item.category}</Link>
               <button onClick = {() => this.delete(item, items)}>Delete Item</button>
-              <button onClick = {() => this.update(item, items)}>Update Item</button>
             </li>
           ))}
         </ul>
          <input type = "text" onChange = {(e) => this.handleChange(e)} value={this.state.text}/>
          <Switch >
               {items.map(item => (
-
-
-                  <Route exact path = {`/details/${item}/:${item}`} render={(props) => <Details {...props} item={item} />}></Route>
-
-                ))}
+                  <Route exact path = {`/details/${item.category}/:category`} component={Details}></Route>
+              ))}
         </Switch>
-        
       </div>
      </Router>
     );
   }
 }
-class Details extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {items : [], text: ""};
-    console.log(this.props.item);
-  }
-  handleChange(e){
-    let value = e.target.value;
-    this.setState({text: value});
-  }
-  create(){
-    this.setState({items: [...this.state.items, this.state.text], text:""});
-  }
-  
-  delete(deleteItem, items){
-    const result = items.filter((item) => item != deleteItem);
-    this.setState({items: result});
-    
-  }
-  
-  update(updateItem, items){
-    for(let i = 0 ; i < items.length; i++){
-      if(items[i] === updateItem){
-          items[i] = this.state.text;
-          this.setState ({items:items, text:""});
-          break;
-      }
-    }
-  }
-  
-  render(){
-  //const shortName = this.props.match.params.shortName;
-  //console.log(shortName);
-  const items = this.state.items;
-  //console.log(items);
-    return(
-    
-      <div>
 
-        <button onClick = {() => this.create()}>Add Item</button>
-        <ul>
-          {this.props.item}
-          {items.map(item => (
-            <li>
-              {item}
-              
-              <button onClick = {() => this.delete(item, items)}>Delete Item</button>
-              <button onClick = {() => this.update(item, items)}>Update Item</button>
-            </li>
-          ))}
-        </ul>
-         <input type = "text" onChange = {(e) => this.handleChange(e)} value={this.state.text}/>
-         
-      </div>
-     
-    );
+const mapStateToProps = (state) =>{
+  return{
+    sideItems: state.sideItems
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) =>{
+  return{
+    addItem: (item)=>{
+      dispatch({
+        type: "ADD_ITEM",
+        item: item
+      })
+    },
+    deleteItem: (item)=>{
+      dispatch({
+        type: "DELETE_ITEM",
+        category: item.category,
+      })
+    }
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);

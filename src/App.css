@@ -1,5 +1,35 @@
 .completed{
-
   text-decoration: line-through;
+}
 
+li {
+    list-style-type: none;
+}
+
+ul {
+  padding: 0;
+}
+
+
+.flex {
+  display: flex
+}
+
+.left-nav {
+  border-right: 1px solid black;
+  height: 100vh;
+}
+
+.pad-x {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.pad-y {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.active{
+  color: red
 }
